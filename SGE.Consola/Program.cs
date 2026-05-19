@@ -106,14 +106,41 @@ try
         var requestEliminarExpediente = new EliminarExpedienteRequest(idParaModificar, idUsuario);
         eliminarExpedienteUseCase.Ejecutar(requestEliminarExpediente);
         Console.WriteLine("Expediente eliminado correctamente!!");
+
+/*         Console.WriteLine("\n--- 10. Forzando un error de Repositorio ---");
+        Guid idInexistente = Guid.NewGuid();
+
+        Console.WriteLine("Atacando el repositorio directamente para saltear la validación del Caso de Uso...");
+
+        // Llamamos directamente al método del repositorio para que explote su propia validación interna
+        expedienteRepo.Eliminar(idInexistente); */
     }
 
     Console.WriteLine("\n=====================================================");
     Console.WriteLine("Prueba finalizada.");
 }
+
+catch (AutorizacionException authEx)
+{
+    Console.ForegroundColor = ConsoleColor.DarkYellow;
+    Console.WriteLine($"\n[ACCESO DENEGADO]: {authEx.Message}");
+    Console.ResetColor();
+}
+catch (EntidadNoEncontradaException notFoundEx)
+{
+    Console.ForegroundColor = ConsoleColor.Blue;
+    Console.WriteLine($"\n[NO ENCONTRADO]: {notFoundEx.Message}");
+    Console.ResetColor();
+}
+catch (RepositoryException repoEx)
+{
+    Console.ForegroundColor = ConsoleColor.DarkRed;
+    Console.WriteLine($"\n[ERROR DE DATOS]: {repoEx.Message}");
+    Console.ResetColor();
+}
 catch (Exception ex)
 {
     Console.ForegroundColor = ConsoleColor.Red;
-    Console.WriteLine($"\n[ERROR CONTROLADO]: {ex.Message}");
+    Console.WriteLine($"\n[ERROR INESPERADO DEL SISTEMA]: {ex.Message}");
     Console.ResetColor();
 }

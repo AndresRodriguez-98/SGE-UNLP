@@ -58,4 +58,30 @@ Eliminación en cascada:
 
 ![alt text](image-3.png)
 
+## Prueba de errores:
+
+## 1. Error de Autorización:
+
+Cambiar a "false" el valor de retorno del servicio de autorización AutorizacionProvisionalService:
+![alt text](image-5.png)
+
+Salida:
+![alt text](image-4.png)
+
+## 2. Error de Entidad no Encontrada:
+
+Cambiar el id por un nuevo GUID en algun metodo que busque una entidad por ID como el "Modificar" en el 'Program.cs':
+![alt text](image-7.png)
+
+Salida:
+![alt text](image-6.png)
+
+## 3. Error de Repositorio:
+
+Podemos crear un nuevo id que no exista en nuestro .txt e intentar llamar al método eliminar DIRECTAMENTE desde el repositorio, pasa saltarnos el caso de uso:
+![alt text](image-9.png)
+
+Salida:
+![alt text](image-8.png)
+
 
