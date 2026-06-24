@@ -13,7 +13,7 @@ public class Usuario
     public bool EsAdministrador { get; private set; }
 
     // ENCAPSULAMIENTO! por dentro es modificable, por fuera es de solo lectura
-    private readonly List<Permiso> _permisos = new();
+    private readonly List<Permiso> _permisos = [];
     public IReadOnlyCollection<Permiso> Permisos => _permisos.AsReadOnly();
 
     private Usuario() { }
