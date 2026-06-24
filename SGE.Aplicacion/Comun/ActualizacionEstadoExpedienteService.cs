@@ -1,6 +1,5 @@
 namespace SGE.Aplicacion.Comun;
 
-using SGE.Aplicacion.Expedientes;
 using SGE.Dominio.Tramites;
 using System;
 using System.Linq;

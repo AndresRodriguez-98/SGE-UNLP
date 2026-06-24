@@ -1,6 +1,6 @@
 namespace SGE.Aplicacion.Tramites;
 
-using SGE.Aplicacion.Autorizacion;
+using SGE.Dominio.Autorizacion;
 using SGE.Aplicacion.Comun;
 using SGE.Dominio.Tramites;
 

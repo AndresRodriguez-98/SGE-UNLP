@@ -1,4 +1,4 @@
-using SGE.Aplicacion.Autorizacion;
+using SGE.Dominio.Autorizacion;
 
 public class AutorizacionProvisionalService : IAutorizacionService
 {
