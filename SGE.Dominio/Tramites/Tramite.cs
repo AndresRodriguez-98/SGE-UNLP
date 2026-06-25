@@ -34,6 +34,11 @@ public class Tramite
         UsuarioUltimoCambio = usuarioUltimoCambio;
     }
 
+    protected Tramite()
+    {
+        Contenido = null!;
+    }
+
     public static Tramite Reconstruir(Guid id, Guid expedienteId, EtiquetaTramite etiqueta, ContenidoTramite contenido, DateTime fechaCreacion, DateTime fechaModificacion, Guid usuarioUltimoCambio)
     {
         if (fechaModificacion < fechaCreacion)

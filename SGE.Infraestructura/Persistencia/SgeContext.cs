@@ -86,11 +86,47 @@ public class SgeContext : DbContext
         userConPermisos.AgregarPermiso(Permiso.TramiteAlta);
 
         // Pasamos los datos iniciales a EF Core (Ojo: se mapean las propiedades privadas a través de objetos anónimos para el HasData)
-        modelBuilder.Entity<Usuario>().HasData(
-        [
-            new { admin.Id, admin.Nombre, admin.CorreoElectronico, admin.ContrasenaHash, admin.EsAdministrador },
-            new { userConPermisos.Id, userConPermisos.Nombre, userConPermisos.CorreoElectronico, userConPermisos.ContrasenaHash, userConPermisos.EsAdministrador },
-            new { userSinPermisos.Id, userSinPermisos.Nombre, userSinPermisos.CorreoElectronico, userSinPermisos.ContrasenaHash, userSinPermisos.EsAdministrador }
-        ]);
+modelBuilder.Entity<Usuario>().HasData(
+[
+    new 
+    { 
+        admin.Id, 
+        admin.Nombre, 
+        admin.CorreoElectronico, 
+        admin.ContrasenaHash, 
+        admin.EsAdministrador,
+        Permisos = new List<Permiso> 
+        { 
+            Permiso.ExpedienteAlta, 
+            Permiso.ExpedienteBaja, 
+            Permiso.ExpedienteModificacion,
+            Permiso.TramiteAlta, 
+            Permiso.TramiteBaja, 
+            Permiso.TramiteModificacion 
+        }
+    },
+    new 
+    { 
+        userConPermisos.Id, 
+        userConPermisos.Nombre, 
+        userConPermisos.CorreoElectronico, 
+        userConPermisos.ContrasenaHash, 
+        userConPermisos.EsAdministrador,
+        Permisos = new List<Permiso> 
+        { 
+            Permiso.ExpedienteAlta, 
+            Permiso.TramiteAlta 
+        }
+    },
+    new 
+    { 
+        userSinPermisos.Id, 
+        userSinPermisos.Nombre, 
+        userSinPermisos.CorreoElectronico, 
+        userSinPermisos.ContrasenaHash, 
+        userSinPermisos.EsAdministrador,
+        Permisos = new List<Permiso>() // Lista vacía
+    }
+]);
     }
 }

@@ -33,6 +33,11 @@ public class Expediente
         Estado = estado;
     }
 
+    protected Expediente()
+    {
+        Caratula = null!;
+    }
+
     // factory method (permite trasabilidad de los expedientes. Un expediente no puede ser modificado asi nomas, por eso se usa el factory method, para que se reconstruya un nuevo expediente (tipo inmutable))
     public static Expediente Reconstruir(Guid id, Caratula caratula, DateTime fechaCreacion, DateTime fechaModificacion, Guid usuarioId, EstadoExpediente estado)
     {

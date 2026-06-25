@@ -20,4 +20,5 @@ public record class Caratula
             throw new DominioException("La carátula no puede estar vacía.");
         Valor = valor;
     }
+
 }
