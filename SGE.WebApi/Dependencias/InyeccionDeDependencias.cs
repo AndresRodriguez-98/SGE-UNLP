@@ -46,6 +46,7 @@ public static class DependencyInjection
         services.AddScoped<ModificarCaratulaExpedienteUseCase>();
         services.AddScoped<CambiarEstadoExpedienteUseCase>();
         services.AddScoped<ObtenerExpedienteDetalladoUseCase>();
+        services.AddScoped<IActualizacionEstadoExpedienteService, ActualizacionEstadoExpedienteService>();
 
         // 5. Registro de Casos de Uso de Trámites
         services.AddScoped<AgregarTramiteUseCase>();
