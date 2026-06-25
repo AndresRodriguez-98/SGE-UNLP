@@ -7,11 +7,13 @@ namespace SGE.Aplicacion.Expedientes;
 public class ModificarCaratulaExpedienteUseCase
 {
     private readonly IExpedienteRepository _repository;
+    private readonly IUnidadDeTrabajo _unidadDeTrabajo;
     private readonly IAutorizacionService _autorizacionService;
 
-    public ModificarCaratulaExpedienteUseCase(IExpedienteRepository repository, IAutorizacionService autorizacionService)
+    public ModificarCaratulaExpedienteUseCase(IExpedienteRepository repository, IUnidadDeTrabajo unidadDeTrabajo, IAutorizacionService autorizacionService)
     {
         _repository = repository;
+        _unidadDeTrabajo = unidadDeTrabajo;
         _autorizacionService = autorizacionService;
     }
 
@@ -34,6 +36,8 @@ public class ModificarCaratulaExpedienteUseCase
         expediente.ModificarCaratula(nuevaCaratula, request.IdUsuario);
 
         _repository.Modificar(expediente);
+
+        _unidadDeTrabajo.Guardar();
 
         return new ModificarCaratulaResponse(true);
     }

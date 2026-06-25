@@ -6,11 +6,13 @@ namespace SGE.Aplicacion.Expedientes;
 public class CambiarEstadoExpedienteUseCase
 {
     private readonly IExpedienteRepository _repository;
+    private readonly IUnidadDeTrabajo _unidadDeTrabajo;
     private readonly IAutorizacionService _autorizacionService;
     
-    public CambiarEstadoExpedienteUseCase(IExpedienteRepository repository, IAutorizacionService autorizacionService)
+    public CambiarEstadoExpedienteUseCase(IExpedienteRepository repository, IUnidadDeTrabajo unidadDeTrabajo, IAutorizacionService autorizacionService)
     {
         _repository = repository;
+        _unidadDeTrabajo = unidadDeTrabajo;
         _autorizacionService = autorizacionService;
     }
 
@@ -33,6 +35,8 @@ public class CambiarEstadoExpedienteUseCase
 
         // hasta aca los cambios solo estaban en la RAM, ahora se guardan en el repositorio o en la DB a futuro:
         _repository.Modificar(expediente);
+
+        _unidadDeTrabajo.Guardar();
 
         return new CambiarEstadoExpedienteResponse(true);
     }

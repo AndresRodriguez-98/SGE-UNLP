@@ -6,12 +6,14 @@ using SGE.Aplicacion.Comun;
 public class EliminarTramiteUseCase
 {
     private readonly ITramiteRepository _repoTramites;
+    private readonly IUnidadDeTrabajo _unidadDeTrabajo;
     private readonly IActualizacionEstadoExpedienteService _actualizacionService;
     private readonly IAutorizacionService _autorizacionService;
 
-    public EliminarTramiteUseCase(ITramiteRepository repoTramites, IActualizacionEstadoExpedienteService actualizacionService, IAutorizacionService autorizacionService)
+    public EliminarTramiteUseCase(ITramiteRepository repoTramites, IUnidadDeTrabajo unidadDeTrabajo, IActualizacionEstadoExpedienteService actualizacionService, IAutorizacionService autorizacionService)
     {
         _repoTramites = repoTramites;
+        _unidadDeTrabajo = unidadDeTrabajo;
         _actualizacionService = actualizacionService;
         _autorizacionService = autorizacionService;
     }
@@ -31,6 +33,7 @@ public class EliminarTramiteUseCase
         }
 
         _repoTramites.Eliminar(request.TramiteId);
+        _unidadDeTrabajo.Guardar();
         _actualizacionService.Actualizar(tramite.ExpedienteId, request.IdUsuario);
 
         return new EliminarTramiteResponse(true);

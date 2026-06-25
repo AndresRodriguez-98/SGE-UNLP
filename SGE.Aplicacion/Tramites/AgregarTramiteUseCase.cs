@@ -7,12 +7,14 @@ using SGE.Dominio.Tramites;
 public class AgregarTramiteUseCase
 {
     private readonly ITramiteRepository _repoTramites;
+    private readonly IUnidadDeTrabajo _unidadDeTrabajo;
     private readonly IActualizacionEstadoExpedienteService _actualizacionService;
     private readonly IAutorizacionService _autorizacionService;
 
-    public AgregarTramiteUseCase(ITramiteRepository repoTramites, IActualizacionEstadoExpedienteService actualizacionService, IAutorizacionService autorizacionService)
+    public AgregarTramiteUseCase(ITramiteRepository repoTramites, IUnidadDeTrabajo unidadDeTrabajo, IActualizacionEstadoExpedienteService actualizacionService, IAutorizacionService autorizacionService)
     {
         _repoTramites = repoTramites;
+        _unidadDeTrabajo = unidadDeTrabajo;
         _actualizacionService = actualizacionService;
         _autorizacionService = autorizacionService;
     }
@@ -26,6 +28,7 @@ public class AgregarTramiteUseCase
         
         var nuevoTramite = new Tramite(request.ExpedienteId, request.Etiqueta, new ContenidoTramite(request.Contenido), request.IdUsuario);
         _repoTramites.Agregar(nuevoTramite);
+        _unidadDeTrabajo.Guardar();
         _actualizacionService.Actualizar(request.ExpedienteId, request.IdUsuario);
 
         return new AgregarTramiteResponse(true);
