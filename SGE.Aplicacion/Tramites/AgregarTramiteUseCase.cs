@@ -28,8 +28,8 @@ public class AgregarTramiteUseCase
         
         var nuevoTramite = new Tramite(request.ExpedienteId, request.Etiqueta, new ContenidoTramite(request.Contenido), request.IdUsuario);
         _repoTramites.Agregar(nuevoTramite);
-        _unidadDeTrabajo.Guardar();
         _actualizacionService.Actualizar(request.ExpedienteId, request.IdUsuario);
+        _unidadDeTrabajo.Guardar();
 
         return new AgregarTramiteResponse(true);
     }

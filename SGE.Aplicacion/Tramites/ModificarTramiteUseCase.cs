@@ -37,8 +37,8 @@ public class ModificarTramiteUseCase
         var nuevoContenido = new ContenidoTramite(request.Contenido);
         tramite.ModificarTramite(request.Etiqueta, nuevoContenido, request.IdUsuario);
         _repoTramites.Modificar(tramite);
-        _unidadDeTrabajo.Guardar();
         _actualizacionService.Actualizar(tramite.ExpedienteId, request.IdUsuario);
+        _unidadDeTrabajo.Guardar();
 
         return new ModificarTramiteResponse(true);
     }

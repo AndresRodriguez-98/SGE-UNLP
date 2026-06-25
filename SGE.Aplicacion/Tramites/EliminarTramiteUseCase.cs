@@ -33,8 +33,8 @@ public class EliminarTramiteUseCase
         }
 
         _repoTramites.Eliminar(request.TramiteId);
-        _unidadDeTrabajo.Guardar();
         _actualizacionService.Actualizar(tramite.ExpedienteId, request.IdUsuario);
+        _unidadDeTrabajo.Guardar();
 
         return new EliminarTramiteResponse(true);
     }
