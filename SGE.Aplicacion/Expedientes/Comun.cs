@@ -14,3 +14,22 @@ public record AgregarExpedienteResponse(bool Exito, Guid ExpedienteId);
 public record ListarExpedientesRequest();
 public record ListarExpedientesResponse(IEnumerable<ExpedienteDTO> Expedientes);
 public record ExpedienteDTO(Guid Id, string Caratula, DateTime FechaCreacion, DateTime FechaUltimaModificacion, Guid UsuarioUltimoCambio, EstadoExpediente Estado);
+public record ObtenerExpedienteDetalladoRequest(
+    Guid ExpedienteId,
+    Guid IdUsuario // Lo necesitamos si quisiéramos meterle validación de permisos de lectura a futuro
+);
+public record TramiteDetalleDTO(
+    Guid Id,
+    string Etiqueta,
+    string Contenido,
+    DateTime FechaCreacion,
+    Guid UsuarioId
+);
+
+public record ExpedienteDetalladoDTO(
+    Guid Id,
+    string Caratula,
+    DateTime FechaCreacion,
+    string Estado,
+    List<TramiteDetalleDTO> Tramites
+);
