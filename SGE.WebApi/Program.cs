@@ -1,10 +1,8 @@
 using SGE.WebApi.Dependencias;
 using SGE.WebApi.Middlewares;
 using Scalar.AspNetCore;
-using SGE.WebApi.Servicios;
-using SGE.Aplicacion.Usuarios;
+using Microsoft.AspNetCore.OpenApi;
 using Microsoft.OpenApi;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using SGE.Infraestructura.Persistencia;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,10 +13,39 @@ builder.Services.AddAplicacion();
 builder.Services.AddSeguridadJwt(builder.Configuration);
 builder.Services.AddEndpointsApiExplorer();
 
-// Config de Scalar:
-builder.Services.AddSwaggerGen(c =>
+// Registrar el motor nativo de OpenAPI de Microsoft
+builder.Services.AddOpenApi(options =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "SGE API", Version = "v1" });
+    options.AddDocumentTransformer((document, context, cancellationToken) =>
+    {
+        document.Info = new OpenApiInfo
+        {
+            Title = "SGE API",
+            Version = "v1",
+            Description = "Sistema de Gestión de Expedientes con autenticación JWT."
+        };
+
+        // 1. Creamos el esquema del candado
+        document.Components ??= new OpenApiComponents();
+        document.Components.SecuritySchemes ??= new Dictionary<string, IOpenApiSecurityScheme>();
+        
+        document.Components.SecuritySchemes.Add("Bearer", new OpenApiSecurityScheme
+        {
+            Type = SecuritySchemeType.Http,
+            Scheme = "bearer",
+            BearerFormat = "JWT",
+            Description = "Meté tu token JWT directamente acá."
+        });
+
+        // 2. Exigimos el requerimiento global usando la referencia nativa corregida
+        document.Security ??= new List<OpenApiSecurityRequirement>();
+        document.Security.Add(new OpenApiSecurityRequirement
+        {
+            [new OpenApiSecuritySchemeReference("Bearer", document)] = []
+        });
+
+        return Task.CompletedTask;
+    });
 });
 
 var app = builder.Build();
@@ -42,43 +69,21 @@ app.UseMiddleware<ExcepcionGlobalMiddleware>(); // las excepciones se ponen prim
 
 if (app.Environment.IsDevelopment())
 {
-    // 1. Genera el json base
-    app.UseSwagger(options => { options.RouteTemplate = "openapi/{documentName}.json"; });
+    // Mapea el JSON nativo en /openapi/v1.json
+    app.MapOpenApi();
 
-    // 2. Interfaz clásica de Swagger (Entrás en /swagger)
-    app.UseSwaggerUI(c =>
+    // Levanta la interfaz de Swagger UI apuntando al JSON de arriba
+    app.UseSwaggerUI(options =>
     {
-        c.SwaggerEndpoint("/openapi/v1.json", "SGE API v1");
-        c.RoutePrefix = "swagger";
-    });
-
-    // 3. Interfaz de Scalar corregida con el patrón relativo (Entrás en /scalar)
-    app.MapScalarApiReference(options =>
-    {
-        options.WithOpenApiRoutePattern("/openapi/v1.json");
+        options.SwaggerEndpoint("/openapi/v1.json", "SGE API v1");
+        options.RoutePrefix = "swagger"; // Entrás desde /swagger
     });
 }
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-// ENDPOINT 1: Registro de Usuarios (Público)
-app.MapPost("/api/usuarios/registrar", (RegistrarUsuarioUseCase useCase, RegistrarUsuarioRequest request) =>
-{
-    var resultado = useCase.Ejecutar(request);
-    return Results.Ok(resultado);
-})
-.WithTags("Autenticación");
-
-// ENDPOINT 2: Login y Generación de Token (Público)
-app.MapPost("/api/usuarios/login", (LoginUseCase useCase, TokenService tokenService, LoginRequest request) =>
-{
-    var response = useCase.Ejecutar(request);
-    // Usamos el servicio de la API para firmar el token físico real
-    var token = tokenService.GenerarToken(response);
-
-    return Results.Ok(new { Token = token, Usuario = response });
-})
-.WithTags("Autenticación");
+app.MapAutorizacionEndpoints();
+app.MapExpedienteEndpoints();
 
 app.Run();
