@@ -19,19 +19,19 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfraestructura(this IServiceCollection services, IConfiguration configuration)
     {
-        // 1. Configuración de SQLite con EF Core
+        // Config de SQLite con EFCore
         services.AddDbContext<SgeContext>(options =>
         {
             options.UseSqlite("Data Source=../SGE.Infraestructura/SGE.sqlite");
         });
 
-        // 2. Registro de Unidad de Trabajo y Repositorios
+        // Unidad de Trabajo y Repositorios
         services.AddScoped<IUnidadDeTrabajo, UnidadDeTrabajo>();
         services.AddScoped<IExpedienteRepository, ExpedienteRepository>();
         services.AddScoped<ITramiteRepository, TramiteRepository>();
         services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 
-        // 3. Registro del Servicio de Autorización
+        // Servicio de Autorización
         services.AddScoped<IAutorizacionService, AutorizacionService>();
 
         return services;
@@ -39,7 +39,7 @@ public static class DependencyInjection
 
     public static IServiceCollection AddAplicacion(this IServiceCollection services)
     {
-        // 4. Registro de Casos de Uso de Expedientes
+        // Casos de Uso de Expedientes
         services.AddScoped<AgregarExpedienteUseCase>();
         services.AddScoped<EliminarExpedienteUseCase>();
         services.AddScoped<ListarExpedientesUseCase>();
@@ -48,12 +48,13 @@ public static class DependencyInjection
         services.AddScoped<ObtenerExpedienteDetalladoUseCase>();
         services.AddScoped<IActualizacionEstadoExpedienteService, ActualizacionEstadoExpedienteService>();
 
-        // 5. Registro de Casos de Uso de Trámites
+        // Casos de Uso de Trámites
         services.AddScoped<AgregarTramiteUseCase>();
+        services.AddScoped<ListarTramitesPorExpedienteUseCase>();
         services.AddScoped<ModificarTramiteUseCase>();
         services.AddScoped<EliminarTramiteUseCase>();
 
-        // 6. Registro de Casos de Uso de Usuarios
+        // Casos de Uso de Usuarios
         services.AddScoped<RegistrarUsuarioUseCase>();
         services.AddScoped<LoginUseCase>();
         services.AddScoped<ModificarMisDatosUseCase>();
@@ -66,7 +67,7 @@ public static class DependencyInjection
 
     public static IServiceCollection AddSeguridadJwt(this IServiceCollection services, IConfiguration configuration)
     {
-        // 7. Registro del Servicio de Token
+        // Servicio de Token
         services.AddScoped<TokenService>();
 
         var jwtSettings = configuration.GetSection("JwtSettings");

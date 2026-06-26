@@ -1,7 +1,6 @@
 using SGE.WebApi.Dependencias;
 using SGE.WebApi.Middlewares;
-using Scalar.AspNetCore;
-using Microsoft.AspNetCore.OpenApi;
+using SGE.WebApi.Endpoints;
 using Microsoft.OpenApi;
 using SGE.Infraestructura.Persistencia;
 
@@ -85,5 +84,6 @@ app.UseAuthorization();
 
 app.MapAutorizacionEndpoints();
 app.MapExpedienteEndpoints();
+app.MapTramiteEndpoints();
 
 app.Run();
