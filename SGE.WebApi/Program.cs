@@ -12,7 +12,6 @@ builder.Services.AddAplicacion();
 builder.Services.AddSeguridadJwt(builder.Configuration);
 builder.Services.AddEndpointsApiExplorer();
 
-// Registrar el motor nativo de OpenAPI de Microsoft
 builder.Services.AddOpenApi(options =>
 {
     options.AddDocumentTransformer((document, context, cancellationToken) =>
@@ -36,7 +35,6 @@ builder.Services.AddOpenApi(options =>
             Description = "Meté tu token JWT directamente acá."
         });
 
-        // 2. Exigimos el requerimiento global usando la referencia nativa corregida
         document.Security ??= new List<OpenApiSecurityRequirement>();
         document.Security.Add(new OpenApiSecurityRequirement
         {
@@ -55,12 +53,13 @@ using (var scope = app.Services.CreateScope())
     try
     {
         var contexto = servicios.GetRequiredService<SgeContext>();
-        contexto.Database.EnsureCreated();
+        // INICIALIZADOR del ensurecreated, pragma delete y seeds
+        SgeDbInitializer.Inicializar(contexto); 
     }
     catch (Exception ex)
     {
         var logger = servicios.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "Falló la creación automática de la DB.");
+        logger.LogError(ex, "Falló la creación o inicialización de la DB.");
     }
 }
 
@@ -68,10 +67,8 @@ app.UseMiddleware<ExcepcionGlobalMiddleware>(); // las excepciones se ponen prim
 
 if (app.Environment.IsDevelopment())
 {
-    // Mapea el JSON nativo en /openapi/v1.json
     app.MapOpenApi();
 
-    // Levanta la interfaz de Swagger UI apuntando al JSON de arriba
     app.UseSwaggerUI(options =>
     {
         options.SwaggerEndpoint("/openapi/v1.json", "SGE API v1");
@@ -85,5 +82,6 @@ app.UseAuthorization();
 app.MapAutorizacionEndpoints();
 app.MapExpedienteEndpoints();
 app.MapTramiteEndpoints();
+app.MapUsuariosEndpoints();
 
 app.Run();

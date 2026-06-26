@@ -27,7 +27,6 @@ public class ModificarMisDatosUseCase
         }
 
         usuario.ActualizarDatosPersonales(request.NuevoNombre, request.NuevaContrasena);
-        _usuarioRepo.Eliminar(usuario);
         _unidadDeTrabajo.Guardar();
 
         return new ModificarMisDatosResponse(true, "Datos personales actualizados con éxito.");
