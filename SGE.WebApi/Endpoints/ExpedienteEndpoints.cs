@@ -13,9 +13,11 @@ public static class ExpedienteEndpoints
                        .RequireAuthorization();
 
         // 1. POST: /api/expedientes
-        grupo.MapPost("/", (AgregarExpedienteUseCase useCase, ClaimsPrincipal usuario, AgregarExpedienteRequest request) =>
+        grupo.MapPost("/", (AgregarExpedienteUseCase useCase, ClaimsPrincipal usuario, AgregarExpedienteInput input) =>
         {
-            var resultado = useCase.Ejecutar(request);
+            var idUsuarioToken = Guid.Parse(usuario.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? Guid.Empty.ToString());
+            var req = new AgregarExpedienteRequest(input.NuevaCaratula, idUsuarioToken);
+            var resultado = useCase.Ejecutar(req);
             return Results.Ok(resultado);
         });
 
@@ -34,28 +36,28 @@ public static class ExpedienteEndpoints
             var idUsuario = Guid.Parse(usuario.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? Guid.Empty.ToString());
             var req = new ObtenerExpedienteDetalladoRequest(id, idUsuario);
             var resultado = useCase.Ejecutar(req);
-            
-            return resultado != null 
-                ? Results.Ok(resultado) 
+
+            return resultado != null
+                ? Results.Ok(resultado)
                 : Results.NotFound(new { mensaje = "Expediente no encontrado." });
         });
 
-        // 4. PUT: /api/expedientes/{id}/caratula
-        grupo.MapPut("/{id:guid}/caratula", (ModificarCaratulaExpedienteUseCase useCase, ClaimsPrincipal usuario, Guid id, string nuevaCaratula) =>
+        // 4. PUT a caratula: /api/expedientes/{id}/caratula
+        grupo.MapPut("/{id:guid}/caratula", (ModificarCaratulaExpedienteUseCase useCase, ClaimsPrincipal usuario, Guid id, ModificarCaratulaInput input) =>
         {
-            var idUsuario = Guid.Parse(usuario.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? Guid.Empty.ToString());
-            
-            var req = new ModificarCaratulaRequest(id, nuevaCaratula, idUsuario);
+            var idUsuarioToken = Guid.Parse(usuario.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? Guid.Empty.ToString());
+
+            var req = new ModificarCaratulaRequest(id, input.NuevaCaratula, idUsuarioToken);
             var resultado = useCase.Ejecutar(req);
             return Results.Ok(resultado);
         });
 
-        // 5. PUT: /api/expedientes/{id}/estado
-        grupo.MapPut("/{id:guid}/estado", (CambiarEstadoExpedienteUseCase useCase, ClaimsPrincipal usuario, Guid id, EstadoExpediente nuevoEstado) =>
+        // 5. PUT a estado: /api/expedientes/{id}/estado
+        grupo.MapPut("/{id:guid}/estado", (CambiarEstadoExpedienteUseCase useCase, ClaimsPrincipal usuario, Guid id, CambiarEstadoExpedienteInput input) =>
         {
-            var idUsuario = Guid.Parse(usuario.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? Guid.Empty.ToString());
-            
-            var req = new CambiarEstadoExpedienteRequest(id, nuevoEstado, idUsuario);
+            var idUsuarioToken = Guid.Parse(usuario.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? Guid.Empty.ToString());
+
+            var req = new CambiarEstadoExpedienteRequest(id, input.NuevoEstado, idUsuarioToken);
             var resultado = useCase.Ejecutar(req);
             return Results.Ok(resultado);
         });
@@ -66,8 +68,12 @@ public static class ExpedienteEndpoints
             var idUsuario = Guid.Parse(usuario.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? Guid.Empty.ToString());
             var req = new EliminarExpedienteRequest(id, idUsuario);
             var resultado = useCase.Ejecutar(req);
-            
-            return Results.Ok(resultado); // Nos devuelve el EliminarExpedienteResponse(bool Exito)
+
+            return Results.Ok(resultado);
         });
     }
+
+    public record AgregarExpedienteInput(string NuevaCaratula);
+    public record ModificarCaratulaInput(string NuevaCaratula);
+    public record CambiarEstadoExpedienteInput(EstadoExpediente NuevoEstado);
 }

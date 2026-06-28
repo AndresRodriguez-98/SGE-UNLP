@@ -12,10 +12,10 @@ public static class TramiteEndpoints
                        .WithTags("Trámites")
                        .RequireAuthorization();
 
-        grupo.MapPost("/", (AgregarTramiteUseCase useCase, ClaimsPrincipal usuario, AgregarTramiteRequest request) =>
+        grupo.MapPost("/", (AgregarTramiteUseCase useCase, ClaimsPrincipal usuario, AgregarTramiteInput input) =>
         {
-            var id = Guid.Parse(usuario.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? Guid.Empty.ToString());
-            var req = request with { IdUsuario = id };
+            var idUsuarioToken = Guid.Parse(usuario.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? Guid.Empty.ToString());
+            var req = new AgregarTramiteRequest(input.ExpedienteId, input.Etiqueta, input.Contenido, idUsuarioToken);
             var resultado = useCase.Ejecutar(req);
 
             return Results.Ok(resultado);
@@ -32,21 +32,22 @@ public static class TramiteEndpoints
         {
             var idUsuario = Guid.Parse(usuario.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? Guid.Empty.ToString());
             var req = new ModificarTramiteRequest(id, input.Etiqueta, input.Contenido, idUsuario);
-            
             var resultado = useCase.Ejecutar(req);
+
             return Results.Ok(resultado);
         });
 
         grupo.MapDelete("/{id:guid}", (EliminarTramiteUseCase useCase, ClaimsPrincipal usuario, Guid id) =>
         {
             var idUsuario = Guid.Parse(usuario.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? Guid.Empty.ToString());
-            
             var req = new EliminarTramiteRequest(id, idUsuario);
             var resultado = useCase.Ejecutar(req);
+            
             return Results.Ok(resultado);
         });
     }
 }
 
 // TODO: ESTO ES PARA QUE EL PUT NO PIDA EL TRAMITE ID NI EL USUARIO ID
+public record AgregarTramiteInput(Guid ExpedienteId, EtiquetaTramite Etiqueta, string Contenido);
 public record ModificarTramiteInput(EtiquetaTramite Etiqueta, string Contenido);
